@@ -26,9 +26,8 @@ namespace repos_stats
             repos.ForEach(async e => {
                 try
                 {
-                    log.LogInformation($"Repo: {e.FullName}");
                     var traffic = await _githubClient.ListTrafficViews(log, e.Owner.Login, e.Name);
-                    log.LogInformation($"\tViews: {traffic.Count}");
+                    log.LogInformation($"Repo: {e.FullName}\nSubscribers: {e.SubscribersCount}\nStargazers: {e.StargazersCount}\nViews: {traffic.Count}\nUnique Views: {traffic.Uniques}");
                 }
                 catch (Exception ex)
                 {
