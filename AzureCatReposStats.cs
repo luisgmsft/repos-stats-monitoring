@@ -27,7 +27,8 @@ namespace repos_stats
                 try
                 {
                     var traffic = await _githubClient.ListTrafficViews(log, e.Owner.Login, e.Name);
-                    log.LogInformation($"Repo: {e.FullName}\nSubscribers: {e.SubscribersCount}\nStargazers: {e.StargazersCount}\nViews: {traffic.Count}\nUnique Views: {traffic.Uniques}");
+                    var clones = await _githubClient.ListClones(log, e.Owner.Login, e.Name);
+                    log.LogInformation($"Repo: {e.FullName}\nSubscribers: {e.SubscribersCount}\nStargazers: {e.StargazersCount}\nIssues: {e.OpenIssuesCount}\nViews: {traffic.Count}\nUnique Views: {traffic.Uniques}\nUnique Clones: {clones.Uniques}");
                 }
                 catch (Exception ex)
                 {

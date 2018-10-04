@@ -44,5 +44,20 @@ namespace repos_stats.Clients
                 throw ex;
             }
         }
+
+        public async Task<RepositoryTrafficClone> ListClones(ILogger log, string owner, string repo)
+        {
+            try
+            {
+                var rawTrafficViews = await _client.GetAsync($"/repos/{owner}/{repo}/traffic/clones");
+                var payload = await rawTrafficViews.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<RepositoryTrafficClone>(payload);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message);
+                throw ex;
+            }
+        }
     }
 }

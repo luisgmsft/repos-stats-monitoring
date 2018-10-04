@@ -7,8 +7,8 @@ namespace repos_stats.Models
     {
         public RepositoryTrafficView() { }
 
-        [JsonProperty("timestamp")]
-        public DateTimeOffset Timestamp { get; protected set; }
+        // [JsonProperty("timestamp")]
+        // public DateTimeOffset Timestamp { get; protected set; }
         
         [JsonProperty("count")]
         public int Count { get; protected set; }
