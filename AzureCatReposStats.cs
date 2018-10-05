@@ -24,12 +24,14 @@ namespace repos_stats
         public static async Task<IActionResult> GetStats([HttpTrigger(AuthorizationLevel.Function, "get", Route = "stats")]HttpRequest req, ILogger log)
         {
             var repos = await _githubClient.ListRepositories();
-            repos.Where(e => e.Permissions.Admin).ToList().ForEach(async e => {
+            repos.ForEach(async e => {
+            //repos.Where(e => e.Permissions.Admin).ToList().ForEach(async e => {
                 try
                 {
                     var traffic = await _githubClient.ListTrafficViews(log, e.Owner.Login, e.Name);
                     var clones = await _githubClient.ListClones(log, e.Owner.Login, e.Name);
-                    log.LogInformation($"Repo: {e.FullName}\nSubscribers: {e.SubscribersCount}\nStargazers: {e.StargazersCount}\nIssues: {e.OpenIssuesCount}\nViews: {traffic.Count}\nUnique Views: {traffic.Uniques}\nUnique Clones: {clones.Uniques}");
+                    var prs = await _githubClient.ListPRs(log, e.Owner.Login, e.Name);
+                    log.LogInformation($"Repo: {e.FullName}\nSubscribers: {e.SubscribersCount}\nStargazers: {e.StargazersCount}\nIssues: {e.OpenIssuesCount}\nViews: {traffic.Count}\nUnique Views: {traffic.Uniques}\nUnique Clones: {clones.Uniques}\nPRs: {prs.Count}");
                 }
                 catch (Exception ex)
                 {
