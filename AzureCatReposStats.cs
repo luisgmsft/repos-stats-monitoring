@@ -38,44 +38,10 @@ namespace repos_stats
         // https://docs.microsoft.com/en-us/azure/azure-functions/manage-connections
         private static GitHubClient _githubClient = new GitHubClient();
 
-        //[FunctionName("cron-stats")]
-        // public static async Task CronStats(
-        //     [TimerTrigger("0 0 1 * * *")]TimerInfo myTimer
-        //     , [CosmosDB(
-        //         databaseName: "repos-stats-sql-database",
-        //         collectionName: "repos-stats-sql-collection",
-        //         ConnectionStringSetting = "CosmosDBConnection")]IAsyncCollector<RepoStat> statsOut
-        //     , ILogger log)
-        // {
-        //     var repos = await _githubClient.ListRepositories();
-        //     //repos.ForEach(async e => {
-        //     repos.Where(e => e.Permissions.Admin).ToList().ForEach(async e => {
-        //         try
-        //         {
-        //             var traffic = await _githubClient.ListTrafficViews(log, e.Owner.Login, e.Name);
-        //             var clones = await _githubClient.ListClones(log, e.Owner.Login, e.Name);
-        //             var prs = await _githubClient.ListPRs(log, e.Owner.Login, e.Name);
-        //             await statsOut.AddAsync(new RepoStat {
-        //                 Repo = e.FullName,
-        //                 Subscribers = e.SubscribersCount,
-        //                 Stargazers = e.StargazersCount,
-        //                 Issues = e.OpenIssuesCount,
-        //                 Views = traffic.Count,
-        //                 UniqueViews = traffic.Uniques,
-        //                 UniqueClones = clones.Uniques,
-        //                 PRs = prs.Count
-        //             });
-        //         }
-        //         catch (Exception ex)
-        //         {
-        //             log.LogError(ex.Message);
-        //         }
-        //     });
-        // }
-
-        [FunctionName("get-stats")]
-        public static async Task<IActionResult> GetStats(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "stats")]HttpRequest req
+        [FunctionName("cron-stats")]
+        public static async Task CronStats(
+            // https://codehollow.com/2017/02/azure-functions-time-trigger-cron-cheat-sheet/
+            [TimerTrigger("0 0 1 * * *")]TimerInfo myTimer
             , [CosmosDB(
                 databaseName: "repos-stats-sql-database",
                 collectionName: "repos-stats-sql-collection",
@@ -106,7 +72,6 @@ namespace repos_stats
                     log.LogError(ex.Message);
                 }
             });
-            return new OkResult();
         }
     }
 }
