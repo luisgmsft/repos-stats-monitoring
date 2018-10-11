@@ -50,7 +50,9 @@ namespace repos_stats
         {
             var repos = await _githubClient.ListRepositories();
             //repos.ForEach(async e => {
-            repos.Where(e => e.Permissions.Admin).ToList().ForEach(async e => {
+            await Task.WhenAll(repos
+                .Where(e => e.Permissions.Admin)
+                .Select(async e => {
                 try
                 {
                     var traffic = await _githubClient.ListTrafficViews(log, e.Owner.Login, e.Name);
@@ -71,7 +73,7 @@ namespace repos_stats
                 {
                     log.LogError(ex.Message);
                 }
-            });
+            }));
         }
     }
 }
