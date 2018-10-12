@@ -1,11 +1,15 @@
 #!/bin/bash
 
 # Set variables for the new account, database, and collection
-resourceGroupName='lugizi-repos-stats-rg'
+resourceGroupName='mspnp-repos-stats-rg'
 location='westus2'
 name='repos-stats-test'
 databaseName='repos-stats-sql-database'
 collectionName='repos-stats-sql-collection'
+storageName='reposstatsst'
+functionAppName='reposstatsfa'
+
+az group delete --name $resourceGroupName --yes
 
 # Create a resource group
 az group create \
@@ -33,3 +37,33 @@ az cosmosdb collection create \
 	--name $name \
 	--db-name $databaseName \
 	--resource-group $resourceGroupName
+
+az storage account create \
+	--name $storageName \
+	--location $location \
+	--resource-group $resourceGroupName \
+	--sku Standard_LRS
+
+az functionapp create \
+	--resource-group $resourceGroupName \
+	--consumption-plan-location $location \
+	--name $functionAppName \
+	--storage-account $storageName
+
+az functionapp config appsettings set --name $functionAppName --resource-group $resourceGroupName --settings \
+FUNCTIONS_EXTENSION_VERSION=~2 \
+FUNCTIONS_WORKER_RUNTIME=dotnet \
+GitHub_PAT=[pat-here] \
+CosmosDBConnection=[connection-string-here] \
+GITHUB_WORK_ITEM_TYPE=GitHub \
+VSTS_ROOT_AREA_PATH=SharedArea \
+SECRET_whtest=[secret] \
+VSTS_ROOT_AREA_PATH=SharedArea \
+SECRET_whtest=[secret] \
+SECRET_webhook-test=[secret-key] \
+VSTS_BASEURL=https://pnp.visualstudio.com \
+VSTS_TOKEN=[vsts-token] \
+EventHubConnectionString=[even-hub-connection-string] \
+VSTS_PROJECT_NAME=whtest
+
+func azure functionapp publish $functionAppName
